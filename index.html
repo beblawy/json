@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Angular Tutorial</title>
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+
+		<script type="text/javascript" src="angular.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.min.js"></script>
+
+		<script type="text/javascript">
+			var app = angular.module("beblawy", ["ui.bootstrap"]);
+
+			app.controller("test", function($scope, $http, $timeout){
+				$scope.jobs = [];
+				$scope.search = '';
+				$scope.loading = true;
+				
+
+				$scope.get_data = function(){
+					$scope.loading = true;
+					$timeout(function(){
+
+						$http.get("data.php?q=" + $scope.search).then(function(result){
+							$scope.loading = false;
+							$scope.jobs = result.data.jobs;
+							$scope.pag.total = result.data.total;
+						});
+					}, 5000)
+
+
+				}
+
+				$scope.get_data()
+
+				$scope.pag = {
+					total : 0,
+					amount:2,
+					page: 1
+				}
+			});
+		</script>
+
+	</head>
+	<body ng-app="beblawy">
+		
+		<div class="container-fluid" ng-controller="test">
+
+			<div class="row">
+				<div class="sub">
+					<input type="" ng-model="search" style="padding:15px;width: 100%" name="" placeholder="Search ...">
+					<button style="width: 120px;" class="btn btn-primary" ng-click="get_data()">
+					<span ng-if="!loading">Search</span>
+					<img src="loader.gif" ng-if="loading" class="loader">
+				</button>
+
+<ul uib-pagination total-items="pag.total" ng-model="pag.page" max-size="4" items-per-page="pag.amount" class="pagination-sm" boundary-link-numbers="true"></ul>
+					
+
+				</div>
+			</div>
+			<div class="row">
+				<div class="sub">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>ID</th>
+								<th>Job Name</th>
+								<th>Title</th>
+								<th>Description</th>
+								<th>Location</th>
+								<th>Experience</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr ng-repeat="(key, job) in jobs">
+								<td>{{ key + 1 }}</td>
+								<td>{{ job.id }}</td>
+								<td>{{ job.name }}</td>
+								<td>{{ job.title }}</td>
+								<td>{{ job.description }}</td>
+								<td>{{ job.location }}</td>
+								<td>{{ job.experience }}</td> 	
+							</tr>
+						</tbody>
+					</table>
+					
+				</div>
+
+			</div>
+		</div>
+
+	</body>
+</html>
